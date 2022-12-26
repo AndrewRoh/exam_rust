@@ -24,3 +24,7 @@ path = "src/grpc/server.rs"
 [[example]]
 name = "client_streaming"
 path = "src/grpc/client_streaming.rs"
+
+[[example]]
+name = "name_gen"
+path = "src/text/namegen.rs"
