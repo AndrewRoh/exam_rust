@@ -1,3 +1,5 @@
+mod server_streaming;
+
 pub mod greeter {
     include!("../../../gen/src/proto/greeter.rs");
 }

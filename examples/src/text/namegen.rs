@@ -22,8 +22,13 @@ fn main() {
         name += start.choose(&mut thread_rng()).unwrap();
         if thread_rng().gen() {
             name += vowel.choose(&mut thread_rng()).unwrap();
-            name += middle.choose(&mut thread_rng()).unwrap();
+            //name += middle.choose(&mut thread_rng()).unwrap();
         }
+        if thread_rng().gen() {
+            name += middle.choose(&mut thread_rng()).unwrap();
+            //name += vowel.choose(&mut thread_rng()).unwrap();
+        }
+
         name += end.choose(&mut thread_rng()).unwrap();
 
         name

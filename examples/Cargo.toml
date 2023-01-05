@@ -12,19 +12,40 @@ futures = { version="0.3", default-features = false, features = ["alloc"]}
 tokio-stream = { version = "0.1", features =["net"]}
 prost = "0.11.2"
 rand = "0.8.5"
+tonic-build = "0.8.2"
+tiberius = { version="0.11.3", features=["all"]}
+bb8-tiberius = {version="0.13.0"}
+bb8 = "0.8.0"
+tokio-util = "0.7.4"
+uuid = "1.2.2"
+chrono = "0.4.23"
+env_logger = "0.10.0"
+log = "0.4.17"
 
 [[example]]
 name = "client"
 path = "src/grpc/client.rs"
 
 [[example]]
-name = "server"
-path = "src/grpc/server.rs"
-
-[[example]]
 name = "client_streaming"
 path = "src/grpc/client_streaming.rs"
 
 [[example]]
+name = "server"
+path = "src/grpc/server.rs"
+
+[[example]]
+name = "server_streaming"
+path = "src/grpc/server_streaming.rs"
+
+[[example]]
 name = "name_gen"
 path = "src/text/namegen.rs"
+
+[[example]]
+name = "db_exec"
+path = "src/db/db_exec.rs"
+
+[[example]]
+name = "build_proto"
+path = "src/proto_build/build_proto.rs"
