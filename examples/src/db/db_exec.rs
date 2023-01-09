@@ -1,7 +1,6 @@
 use tiberius::Config;
 use env_logger;
 
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
@@ -55,7 +54,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let description_txt: &str = row.get(n).unwrap(); n+=1;
             let is_admin: bool = row.get(n).unwrap(); n+=1;
             let create_dt: chrono::naive::NaiveDateTime = row.get(n).unwrap();
-
 
             (char_guid,player_guid,String::from(char_name),gender,char_level,gold,silver,diamond,
              free_currency,premium_currency,max_health,health,health_regen_rate,max_mana,mana,

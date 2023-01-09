@@ -25,6 +25,7 @@ log = "0.4.17"
 [[example]]
 name = "main"
 path = "src/rust_by_example/main.rs"
+##path = "src/rust_by_example/main1_322.rs"
 
 [[example]]
 name = "client"
@@ -49,6 +50,9 @@ path = "src/text/namegen.rs"
 [[example]]
 name = "db_exec"
 path = "src/db/db_exec.rs"
+[[example]]
+name = "db_exec2"
+path = "src/db/db_exec2.rs"
 
 [[example]]
 name = "build_proto"
