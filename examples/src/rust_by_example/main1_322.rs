@@ -2,8 +2,9 @@ use std::fmt::{self, Formatter, Display};
 use std::mem;
 
 fn main() {
-    println!("Hello, world!");
+    println!("1.hello world ~ 3.2.2.c-like");
 }
+
 //------------------------------------------------------------------------------------------------//
 // 암시적으로 식별되는 enum (0에서 시작)
 #[allow(dead_code)]
@@ -30,6 +31,7 @@ fn main_enums_clike() {
     println!("roses are #{:06x}", Color2::Red as i32);
     println!("violets are #{:06x}", Color2::Blue as i32);
 }
+
 // zero is 0
 // one is 1
 // roses are #ff0000
@@ -70,9 +72,10 @@ fn main_enums_use() {
     match work {
         // 범위 지정이 없다는 점을 다시 한 번 확인하십시오.
         Civilian => println!("Civilians work!"),
-        Soldier  => println!("Soldiers fight!"),
+        Soldier => println!("Soldiers fight!"),
     }
 }
+
 // The poor have no money...
 // Civilians work!
 //------------------------------------------------------------------------------------------------//
@@ -106,7 +109,7 @@ fn inspect(event: WebEvent) {
         // `Click`을 `x`와 `y`로 분해합니다.
         WebEvent::Click { x, y } => {
             println!("clicked at x={}, y={}.", x, y);
-        },
+        }
     }
 }
 
@@ -114,10 +117,10 @@ fn inspect(event: WebEvent) {
 fn main_enums() {
     let pressed = WebEvent::KeyPress('x');
     // `to_owned()`는 스트링 슬라이스에서 소유된 `String`을 생성합니다.
-    let pasted  = WebEvent::Paste("my text".to_owned());
-    let click   = WebEvent::Click { x: 20, y: 80 };
-    let load    = WebEvent::PageLoad;
-    let unload  = WebEvent::PageUnload;
+    let pasted = WebEvent::Paste("my text".to_owned());
+    let click = WebEvent::Click { x: 20, y: 80 };
+    let load = WebEvent::PageLoad;
+    let unload = WebEvent::PageUnload;
 
     inspect(pressed);
     inspect(pasted);
@@ -158,7 +161,7 @@ struct Rectangle {
 fn rect_area(r: Rectangle) -> f32 {
     let x = r.p2.x - r.p1.x;
     let y = r.p2.y - r.p1.y;
-    x*y
+    x * y
 }
 
 #[allow(dead_code)]
@@ -166,8 +169,8 @@ fn square(po: Point, f: f32) -> Rectangle {
     //let Point { x: po.x, y: my_y } = point;
 
     Rectangle {
-        p1: Point { x: po.x, y: po.y},
-        p2: Point{ x: po.x + f, y: po.y+f},
+        p1: Point { x: po.x, y: po.y },
+        p2: Point { x: po.x + f, y: po.y + f },
     }
 }
 
@@ -209,6 +212,7 @@ fn main_structures() {
 
     println!("rect area {},", rect.p1.x);
 }
+
 // point coordinates: (0.3, 0.4)
 // pair contains 1 and 0.1
 // pair contains 1 and 0.1
@@ -245,11 +249,12 @@ fn main_array_slice() {
 
     // 조각들은 배열의 부분을 가르킬 수 있다.
     println!("borrow a section of the array as a slice");
-    analyze_slice(&ys[1 .. 4]);
+    analyze_slice(&ys[1..4]);
 
     // 색인이 범위를 넘어가면 panic으로 넘어간다.
     // println!("{}", xs[5]);
 }
+
 // first element of the array: 1
 // second element of the array: 2
 // array size: 5
@@ -273,16 +278,19 @@ fn reverse(pair: (i32, bool)) -> (bool, i32) {
 // 다음 구조체는 activity 용.
 #[derive(Debug)]
 struct Matrix(f32, f32, f32, f32);
+
 impl fmt::Display for Matrix {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"({0} {1})\n({2} {3})", self.0, self.1, self.2, self.3)
+        write!(f, "({0} {1})\n({2} {3})", self.0, self.1, self.2, self.3)
     }
 }
+
 #[allow(dead_code)]
 fn transpose(src: Matrix) -> Matrix {
-    let dst:Matrix=Matrix(src.3, src.0, src.2, src.1);
+    let dst: Matrix = Matrix(src.3, src.0, src.2, src.1);
     dst
 }
+
 #[allow(dead_code)]
 fn main_tuples() {
     // 서로 다른 타입 무리의 튜플
@@ -306,7 +314,7 @@ fn main_tuples() {
     println!("the reversed pair is {:?}", reverse(pair));
 
     // 하나의 요소인 튜플을 만드려면, 괄호와는 별도로 쉼표를 통해 알리는게 필요하다.
-    println!("one element tuple: {:?}", (5u32,));
+    println!("one element tuple: {:?}", (5u32, ));
     println!("just an integer: {:?}", (5u32));
 
     // 튜플은 바인딩을 생성해서 역구조화 할 수 있다.
@@ -320,6 +328,7 @@ fn main_tuples() {
     println!("Matri\n:\n{}", matrix);
     println!("Transpose:\n{}", transpose(matrix));
 }
+
 // long tuple first value: 1
 // long tuple second value: 2
 // tuple of tuples: ((1, 2, 2), (4, -1), -2)
@@ -353,6 +362,7 @@ fn main_literais_operator() {
     // 밑줄을 사용하여 가독성 올려버리기~
     println!("One million is written as {}", 1_000_000u32);
 }
+
 // 1 + 2 = 3
 // 1 - 2 = -1
 // true AND false is false
@@ -414,7 +424,7 @@ struct Color {
 
 impl Display for Color {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "RGB ({0}, {1}, {2}) 0x{0:02X}{1:02X}{2:02X}", self.red, self.green, self.blue )
+        write!(f, "RGB ({0}, {1}, {2}) 0x{0:02X}{1:02X}{2:02X}", self.red, self.green, self.blue)
     }
 }
 
@@ -437,6 +447,7 @@ fn main_formatting() {
         println!("{}", *color)
     }
 }
+
 // Dublin: 53.348°N 6.260°W
 // Oslo: 59.950°N 10.750°E
 // Vancouver: 49.250°N 123.100°W
@@ -470,6 +481,7 @@ fn main_tests_list() {
     let v = List(vec![1, 2, 3]);
     println!("{}", v);
 }
+
 // [0: 1, 1: 2, 2: 3]
 //------------------------------------------------------------------------------------------------//
 // 구조체는 두 숫자를 보관한다. `Debug`가 파생되어 `Display`의 결과와 대조된다.
@@ -514,7 +526,7 @@ fn main_display() {
     println!("Display: {}", minmax);
     println!("Debug: {:?}", minmax);
 
-    let big_range =   MinMax(-300, 300);
+    let big_range = MinMax(-300, 300);
     let small_range = MinMax(-3, 3);
 
     println!("The big range is {big} and the small is {small}",
@@ -531,6 +543,7 @@ fn main_display() {
     // `fmt::Binary`의 구현이 요구된다. 이는 동작하지 않는다.
     println!("What does Point2D look like in binary: {:b}?", point);
 }
+
 // Compare structures:
 // Display: ([0~14])
 // Debug: MinMax(0, 14)
@@ -555,20 +568,20 @@ fn main_formatted_print() {
 
     // 이름을 인자로 사용할 수 있다.
     println!("{subject} {verb} {object}",
-             object="the lazy dog",
-             subject="the quick brown fox",
-             verb="jumps over");
+             object = "the lazy dog",
+             subject = "the quick brown fox",
+             verb = "jumps over");
 
     // `:`; 뒤에 특수 형식 지정자를 사용할 수 있다..
     println!("{} of {:b} people know binary, the other half don't", 1, 2);
 
     // 넓이를 지정하여 오른쪽 정렬을 사용할 수 있다. 이는 다음과 같이 출력될 것이다.
     // "     1". 5칸의 공백과 "1".
-    println!("{number:>width$}", number=1, width=6);
+    println!("{number:>width$}", number = 1, width = 6);
 
     // 여분의 공간을 0으로 채운 숫자도 사용할 수 있다.
     // 이는 "000001"을 출력할 것.
-    println!("{number:>0width$}", number=1, width=6);
+    println!("{number:>0width$}", number = 1, width = 6);
 
     // 위치지정 인자 사용시 정확한 수의 인자들이 왔는데 검증받게 될 것이다.
     println!("My name is {0}, {1} {0}", "Bond", "James");
