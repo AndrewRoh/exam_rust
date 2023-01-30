@@ -1,5 +1,5 @@
 fn main() {
-    println!("3.3.3.enums>linked_list ~ 7.expressions");
+    println!("3. Custom Types ~ 7. Expressions");
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -500,3 +500,217 @@ fn main_enums_linked_list() {
 }
 // linked list has length: 3
 // 3, 2, 1, Nil
+
+//------------------------------------------------------------------------------------------------//
+// 암시적으로 식별되는 enum (0에서 시작)
+#[allow(dead_code)]
+enum Number {
+    Zero,
+    One,
+    Two,
+}
+
+// 명시적으로 식별 가능한 enum
+#[allow(dead_code)]
+enum Color2 {
+    Red = 0xff0000,
+    Green = 0x00ff00,
+    Blue = 0x0000ff,
+}
+
+#[allow(dead_code)]
+fn main_enums_clike() {
+    // `enums` 은 정수형으로 변환 사용 가능.
+    println!("zero is {}", Number::Zero as i32);
+    println!("one is {}", Number::One as i32);
+
+    println!("roses are #{:06x}", Color2::Red as i32);
+    println!("violets are #{:06x}", Color2::Blue as i32);
+}
+
+// zero is 0
+// one is 1
+// roses are #ff0000
+// violets are #0000ff
+//------------------------------------------------------------------------------------------------//
+// 사용하지 않는 코드에 대한 경고를 숨기는 속성입니다.
+#[allow(dead_code)]
+enum Status {
+    Rich,
+    Poor,
+}
+
+#[allow(dead_code)]
+enum Work {
+    Civilian,
+    Soldier,
+}
+
+#[allow(dead_code)]
+fn main_enums_use() {
+    // 각 이름을 명시적으로 'use'하여 없이도 사용할 수 있도록 합니다.
+    // 수동 범위 지정.
+    use crate::Status::{Poor, Rich};
+    // `Work` 내부의 각 이름을 자동으로 `use`합니다.
+    use crate::Work::*;
+
+    // `Status::Poor`와 동일합니다.
+    let status = Poor;
+    // `Work::Civilian`와 동일합니다.
+    let work = Civilian;
+
+    match status {
+        // 위의 명시적인 `use`로 인해 범위가 부족하다는 점에 유의하십시오.
+        Rich => println!("The rich have lots of money!"),
+        Poor => println!("The poor have no money..."),
+    }
+
+    match work {
+        // 범위 지정이 없다는 점을 다시 한 번 확인하십시오.
+        Civilian => println!("Civilians work!"),
+        Soldier => println!("Soldiers fight!"),
+    }
+}
+
+// The poor have no money...
+// Civilians work!
+//------------------------------------------------------------------------------------------------//
+// 웹 이벤트를 분류하기 위해 `enum`을 만듭니다. 둘 다
+// 이름과 유형 정보가 함께 변형을 지정합니다.
+// `PageLoad != PageUnload` 및 `KeyPress(char) != Paste(String)`.
+// 각각은 다르고 독립적입니다.
+#[allow(dead_code)]
+enum WebEvent {
+    // `enum`은 `unit-like`이거나,
+    PageLoad,
+    PageUnload,
+    // 튜플 구조체처럼,
+    KeyPress(char),
+    Paste(String),
+    // 또는 c와 같은 구조
+    Click { x: i64, y: i64 },
+}
+
+
+// `WebEvent` 열거형을 인수로 사용하는 함수 및
+// 아무것도 반환하지 않습니다.
+#[allow(dead_code)]
+fn inspect(event: WebEvent) {
+    match event {
+        WebEvent::PageLoad => println!("page loaded"),
+        WebEvent::PageUnload => println!("page unloaded"),
+        // `enum` 내부에서 `c`를 분해합니다.
+        WebEvent::KeyPress(c) => println!("pressed '{}'.", c),
+        WebEvent::Paste(s) => println!("pasted \"{}\".", s),
+        // `Click`을 `x`와 `y`로 분해합니다.
+        WebEvent::Click { x, y } => {
+            println!("clicked at x={}, y={}.", x, y);
+        }
+    }
+}
+
+#[allow(dead_code)]
+fn main_enums() {
+    let pressed = WebEvent::KeyPress('x');
+    // `to_owned()`는 스트링 슬라이스에서 소유된 `String`을 생성합니다.
+    let pasted = WebEvent::Paste("my text".to_owned());
+    let click = WebEvent::Click { x: 20, y: 80 };
+    let load = WebEvent::PageLoad;
+    let unload = WebEvent::PageUnload;
+
+    inspect(pressed);
+    inspect(pasted);
+    inspect(click);
+    inspect(load);
+    inspect(unload);
+}
+// pressed 'x'.
+// pasted "my text".
+// clicked at x=20, y=80.
+// page loaded
+// page unloaded
+//------------------------------------------------------------------------------------------------//
+
+// 유닛 구조체
+#[allow(dead_code)]
+struct Nil;
+
+// 튜플 구조체
+#[allow(dead_code)]
+struct Pair(i32, f32);
+
+// 두 필드를 갖는 구조체
+#[allow(dead_code)]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+// 구조체는 다른 구조체의 필드로 사용될 수 있다.
+#[allow(dead_code)]
+struct Rectangle {
+    p1: Point,
+    p2: Point,
+}
+
+#[allow(dead_code)]
+fn rect_area(r: Rectangle) -> f32 {
+    let x = r.p2.x - r.p1.x;
+    let y = r.p2.y - r.p1.y;
+    x * y
+}
+
+#[allow(dead_code)]
+fn square(po: Point, f: f32) -> Rectangle {
+    //let Point { x: po.x, y: my_y } = point;
+
+    Rectangle {
+        p1: Point { x: po.x, y: po.y },
+        p2: Point { x: po.x + f, y: po.y + f },
+    }
+}
+
+#[allow(dead_code)]
+fn main_structures() {
+    // `Point` 초기화;
+    let point: Point = Point { x: 0.3, y: 0.4 };
+
+    // 포인트의 필드에 접근하는 방식.
+    println!("point coordinates: ({}, {})", point.x, point.y);
+
+    // `let` 바인딩을 통해 재구조화.
+    let Point { x: my_x, y: my_y } = point;
+
+    let _rectangle = Rectangle {
+        // 구조체 초기화는 표현문이기도 하다.
+        p1: Point { x: my_y, y: my_x },
+        p2: point,
+    };
+
+    // 단위 구조체 초기화
+    let _nil = Nil;
+
+    // 튜플 구조체 초기화
+    let pair = Pair(1, 0.1);
+
+    // 튜플 구조체에 접근하는 방식.
+    println!("pair contains {:?} and {:?}", pair.0, pair.1);
+
+    // 튜플 구조체의 재구조화
+    let Pair(integer, decimal) = pair;
+    println!("pair contains {:?} and {:?}", integer, decimal);
+
+    let area = rect_area(_rectangle);
+    println!("rect area {}", area);
+
+    let po: Point = Point { x: 0.3, y: 0.4 };
+    let rect = square(po, 4f32);
+
+    println!("rect area {},", rect.p1.x);
+}
+
+// point coordinates: (0.3, 0.4)
+// pair contains 1 and 0.1
+// pair contains 1 and 0.1
+// rect area -0.009999999
+// rect area 0.3,
