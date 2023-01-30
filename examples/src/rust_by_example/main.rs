@@ -1,8 +1,181 @@
 // fn main() {
 //     println!("8.Flow of Control ~ 8.Flow of Control");
 // }
+pub trait Iterator {
+    // The type being iterated over.
+    type Item;
+
+    // `any` takes `&mut self` meaning the caller may be borrowed
+    // and modified, but not consumed.
+    fn any<F>(&mut self, f: F) -> bool where
+    // `FnMut` meaning any captured variable may at most be
+    // modified, not consumed. `Self::Item` states it takes
+    // arguments to the closure by value.
+        F: FnMut(Self::Item) -> bool;
+}
 
 fn main() {
+    let vec1 = vec![1, 2, 3];
+    let vec2 = vec![4, 5, 6];
+
+    // `iter()` for vecs yields `&i32`. Destructure to `i32`.
+    println!("2 in vec1: {}", vec1.iter()     .any(|&x| x == 2));
+    // `into_iter()` for vecs yields `i32`. No destructuring required.
+    println!("2 in vec2: {}", vec2.into_iter().any(| x| x == 2));
+
+    // `iter()` only borrows `vec1` and its elements, so they can be used again
+    println!("vec1 len: {}", vec1.len());
+    println!("First element of vec1 is: {}", vec1[0]);
+    // `into_iter()` does move `vec2` and its elements, so they cannot be used again
+    // println!("First element of vec2 is: {}", vec2[0]);
+    // println!("vec2 len: {}", vec2.len());
+    // TODO: uncomment two lines above and see compiler errors.
+
+    let array1 = [1, 2, 3];
+    let array2 = [4, 5, 6];
+
+    // `iter()` for arrays yields `&i32`.
+    println!("2 in array1: {}", array1.iter()     .any(|&x| x == 2));
+    // `into_iter()` for arrays yields `i32`.
+    println!("2 in array2: {}", array2.into_iter().any(|x| x == 2));
+}
+// 2 in vec1: true
+// 2 in vec2: false
+// vec1 len: 3
+// First element of vec1 is: 1
+// 2 in array1: true
+// 2 in array2: false
+//------------------------------------------------------------------------------------------------//
+fn create_fn() -> impl Fn() {
+    let text = "Fn".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+fn create_fnmut() -> impl FnMut() {
+    let text = "FnMut".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+fn create_fnonce() -> impl FnOnce() {
+    let text = "FnOnce".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+#[allow(dead_code)]
+fn main_functions_closures_output_parameters() {
+    let fn_plain = create_fn();
+    let mut fn_mut = create_fnmut();
+    let fn_once = create_fnonce();
+
+    fn_plain();
+    fn_mut();
+    fn_once();
+}
+// This is a: Fn
+// This is a: FnMut
+// This is a: FnOnce
+//------------------------------------------------------------------------------------------------//
+// 제네릭 `F`를 인자로 취하는 함수를 정의하고
+// `Fn`으로 바인딩하고 그를 호출한다.
+fn call_me<F: Fn()>(f: F) {
+    f();
+}
+
+// 입력으로 사용될 `Fn` 바인딩을 만족시키는 함수.
+fn function() {
+    println!("I'm a function!");
+}
+
+#[allow(dead_code)]
+fn main_functions_closures_input_functions() {
+    // `Fn` 바인딩을 만족시키는 클로저를 정의.
+    let closure = || println!("I'm a closure!");
+
+    call_me(closure);
+    call_me(function);
+}
+// I'm a closure!
+// I'm a function!
+//------------------------------------------------------------------------------------------------//
+// `F`는 반드시 입력 이나 반환하지 않는 클로저에 대해 `Fn`을 구현해야 한다.
+// 정확히 이는 `print`를 위해 필요하다.
+fn apply_2<F>(f: F) where
+    F: Fn() {
+    f();
+}
+
+#[allow(dead_code)]
+fn main_functions_closures_type_anonymity() {
+    let x = 7;
+
+    // `x`를 익명 타입으로 캡쳐하고 `Fn`을 구현한다. 이를 `print`에 저장.
+    let print = || println!("{}", x);
+
+    apply_2(print);
+}
+// 7
+//------------------------------------------------------------------------------------------------//
+#[allow(dead_code)]
+// 클로저를 인자로 받아서 호출하는 함수.
+// <F>는 F가 "일반 유형 매개변수"임을 나타냅니다.
+fn apply<F>(f: F) where
+// 클로저는 입력을 받지 않고 아무것도 반환하지 않는다.
+    F: FnOnce() {   // Fn() or FnMut()의 경우 에러 발생
+
+    f();
+}
+
+// 클로저를 취하고 `i32`를 반환하는 함수
+fn apply_to_3<F>(f: F) -> i32 where
+// 클로저를 취하고 `i32`를 반환하는 함수
+    F: Fn(i32) -> i32 {
+
+    f(3)
+}
+
+#[allow(dead_code)]
+fn main_functions_closures_input_parameters() {
+    use std::mem;
+
+    let greeting = "hello";
+    // 비-복사 유형.
+    // `to_owned`는 빌린 데이터에서 소유 데이터를 생성합니다.
+    let mut farewell = "goodbye".to_owned();
+
+    // 2개의 변수를 캡쳐한다 : `greeting`은 참조로 `farewell`은 값으로.
+    let diary = || {
+        // `greeting`은 참조에 의하므로 `Fn`이 필요하다.
+        println!("I said {}.", greeting);
+
+        // 변경은 `farewell`을 가변참조로 캡쳐되게 강제한다.
+        // 여기서는 `FnMut`이 필요하다.
+        farewell.push_str("!!!");
+        println!("Then I screamed {}.", farewell);
+        println!("Now I can sleep. zzzzz");
+
+        // 수동으로 drop을 호출하면 `farewell`을 값으로 캡쳐되도록 강제한다.
+        // 여기서는 `FnOnce`가 요구된다.
+        mem::drop(farewell);
+    };
+
+    // 클로저를 적용하는 함수를 호출한다.
+    apply(diary);
+
+    // `double`은 `apply_to_3` trait의 범위를 만족시킨다.
+    let double = |x| 2 * x;
+
+    println!("3 doubled: {}", apply_to_3(double));
+}
+// I said hello.
+// Then I screamed goodbye!!!.
+// Now I can sleep. zzzzz
+// 3 doubled: 6
+//------------------------------------------------------------------------------------------------//
+#[allow(dead_code)]
+fn main_functions_closures_capturing() {
     use std::mem;
 
     let color = String::from("green");
@@ -13,37 +186,35 @@ fn main() {
     // 더 제한적인 것을 강요하지 않는다.
     let print = || println!("`color`: {}", color);
 
-    // Call the closure using the borrow.
+    // closure를 사용 빌려온 print문을 호출한다.
     print();
 
-    // `color` can be borrowed immutably again, because the closure only holds
-    // an immutable reference to `color`.
+    // `color`는 불변적으로 다시 빌릴 수 있습니다. 클로저는 `color`.borrow에 대한 불변 참조만 보유하기 때문입니다.
     let _reborrow = &color;
     print();
 
-    // A move or reborrow is allowed after the final use of `print`
+    // `print`를 마지막으로 사용한 후 이동 또는 다시 대여가 허용됩니다.
     let _color_moved = color;
 
-
     let mut count = 0;
-    // A closure to increment `count` could take either `&mut count` or `count`
-    // but `&mut count` is less restrictive so it takes that. Immediately
-    // borrows `count`.
+    // `count`를 증가시키는 클로저는 `&mut count` 또는 `count` 중 하나를
+    // 취할 수 있지만 `&mut count`이 덜 제한적이므로 이를 취한다.
+    // 즉각적 대여한 `count`.
     //
-    // A `mut` is required on `inc` because a `&mut` is stored inside. Thus,
-    // calling the closure mutates the closure which requires a `mut`.
+    // `mut`가 `inc`에 필요한 이유는 `&mut`이 내부에
+    // 저장되기 때문이다. 따라서 클로저의 호출은 `mut`을 요구하는 클로저를 변경한다.
     let mut inc = || {
         count += 1;
         println!("`count`: {}", count);
     };
 
-    // Call the closure using a mutable borrow.
+    // 'mut'로 빌린 클로저 호출.
     inc();
 
-    // The closure still mutably borrows `count` because it is called later.
-    // An attempt to reborrow will lead to an error.
+    // 클로저는 나중에 호출되기 때문에 여전히 가변적으로 `count`를 빌립니다.
+    // reborrow를 시도하면 오류가 발생합니다.
     // let _reborrow = &count;
-    // ^ TODO: try uncommenting this line.
+
     inc();
 
     // The closure no longer needs to borrow `&mut count`. Therefore, it is
@@ -51,27 +222,30 @@ fn main() {
     let _count_reborrowed = &mut count;
 
 
-    // A non-copy type.
+    // 복사가 아닌 타입.
     let movable = Box::new(3);
 
-    // `mem::drop` requires `T` so this must take by value. A copy type
-    // would copy into the closure leaving the original untouched.
-    // A non-copy must move and so `movable` immediately moves into
-    // the closure.
+    // `mem::drop`은 `T`를 요구하므로 이는 값을 취해야 한다. 복사 타입은
+    // 클로저로 복사되어 원본은 변경되지 않는다. 복사가 아니면 이동되야 하고
+    // 그래서 `movable`이 즉시 클로저로 이동된다.
     let consume = || {
         println!("`movable`: {:?}", movable);
         mem::drop(movable);
     };
 
-    // `consume` consumes the variable so this can only be called once.
+    // `comsume`은 변수를 소비하므로 한번만 호출 될 수 있다.
     consume();
-    // consume();
-    // ^ TODO: Try uncommenting this line.
-}
 
+    // consume(); 한번 더 호출 하면 에러 발생
+}
+// `color`: green
+// `color`: green
+// `count`: 1
+// `count`: 2
+// `movable`: 3
 //------------------------------------------------------------------------------------------------//
 #[allow(dead_code)]
-fn main_functions_Closures() {
+fn main_functions_closures() {
     let outer_var = 42;
 
     // 일반 함수는 주변 환경의 변수를 참조할 수 없습니다.
